@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<title>รวมสินค้า</title>
+<style>
+  :root {
+    --bg-color: #F7F7F7;
+    --primary-color: #444444;
+    --secondary-color: #6E6E6E;
+    --accent-color: #999999;
+    --card-bg: #FFFFFF;
+    --text-color: #2E2E2E;
+    --border-color: #D1D1D1;
+    --shadow-color: rgba(0, 0, 0, 0.08);
+  }
+  
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+  }
+  
+  header {
+    background-color: var(--primary-color);
+    padding: 1rem 2rem;
+    color: white;
+    text-align: center;
+  }
+  
+  header h1 {
+    margin: 0 0 12px 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+  
+  .search-box {
+    max-width: 600px;
+    margin: 0 auto 20px;
+    padding: 0 15px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .search-box input {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    font-size: 16px;
+    box-shadow: none;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    background-color: white;
+    color: var(--text-color);
+  }
+  
+  .search-box input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 8px var(--accent-color);
+  }
+  
+  .category-bar {
+    background: var(--card-bg);
+    padding: 10px 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border-color);
+    max-width: 100%;
+    margin: 0 auto 24px auto;
+    justify-content: center;
+  }
+  
+  .category-bar button {
+    background-color: #E8E8E8;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+    font-weight: 600;
+    font-size: 14px;
+    user-select: none;
+    min-width: 72px;
+    text-align: center;
+    box-shadow: 0 2px 4px var(--shadow-color);
+  }
+  
+  .category-bar button.active {
+    background-color: var(--accent-color);
+    color: white;
+    box-shadow: 0 4px 12px rgba(153, 153, 153, 0.7);
+  }
+  
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-auto-rows: 280px;
+    gap: 24px;
+    padding: 0 20px 40px 20px;
+    max-width: 1280px;
+    margin: 0 auto;
+    min-height: calc(280px * 5 + 24px * 4);
+  }
+  
+  .product-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 3px 8px var(--shadow-color);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    cursor: default;
+  }
+  
+  .product-card:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    transform: translateY(-6px);
+  }
+  
+  .product-card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border-bottom: 1px solid #eee;
+    transition: transform 0.3s ease;
+  }
+  
+  .product-card:hover img {
+    transform: scale(1.05);
+  }
+  
+  .product-card .info {
+    padding: 16px 14px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .product-card .info p {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin: 0 0 12px 0;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .product-card a {
+    background-color: var(--accent-color);
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    font-weight: 700;
+    font-size: 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    box-shadow: 0 3px 8px rgba(153, 153, 153, 0.7);
+    user-select: none;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .product-card a:hover {
+    background-color: var(--secondary-color);
+    box-shadow: 0 5px 15px rgba(110, 110, 110, 0.8);
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px 0 40px 0;
+    flex-wrap: wrap;
+    user-select: none;
+    max-width: 960px;
+    margin: 0 auto 40px auto;
+  }
+  
+  .pagination button {
+    border: none;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    min-width: 36px;
+    user-select: none;
+  }
+  
+  .pagination button:hover:not(.active):not(:disabled) {
+    background-color: var(--secondary-color);
+    box-shadow: 0 3px 8px rgba(110, 110, 110, 0.7);
+  }
+  
+  .pagination button.active {
+    background-color: var(--accent-color);
+    cursor: default;
+    box-shadow: 0 4px 12px rgba(153, 153, 153, 0.8);
+  }
+  
+  .pagination button:disabled {
+    opacity: 0.5;
+    cursor: default;
+    box-shadow: none;
+  }
+  
+  @media (max-width: 768px) {
+    .category-bar {
+      max-width: 100%;
+      padding: 10px;
+    }
+    .pagination {
+      max-width: 100%;
+      padding: 20px 10px 40px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .product-grid {
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-auto-rows: 260px;
+      min-height: calc(260px * 5 + 20px * 4);
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>รวมสินค้า</h1>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="ค้นหาสินค้า..." />
+  </div>
+</header>
+
+<div class="category-bar" id="categoryBar">
+  <button class="active" data-filter="all">ทั้งหมด</button>
+</div>
+
+<div class="product-grid" id="productList"></div>
+
+<div class="pagination" id="pagination"></div>
+
+<script>
+  const searchInput = document.getElementById('searchInput');
+  const categoryBar = document.getElementById('categoryBar');
+  const productList = document.getElementById('productList');
+  const pagination = document.getElementById('pagination');
+
+  let allProducts = [];
+  let filteredProducts = [];
+  let itemsPerPage = 25; // เริ่มต้น 5x5
+  let currentPage = 1;
+
+  function getColumnCount() {
+    const gridStyles = window.getComputedStyle(productList);
+    const columns = gridStyles.getPropertyValue('grid-template-columns');
+    const colCount = columns.split(' ').length;
+    return colCount;
+  }
+
+  function updateItemsPerPage() {
+    const colCount = getColumnCount();
+    itemsPerPage = colCount * 5;
+  }
+
+  // ฟังก์ชันดึงข้อมูลจาก Google Sheets ผ่าน URL JSON
+  async function fetchDataFromGoogleSheet() {
+    const sheetId = '1-duNk6H7LjGRwtaWJIqgyZmU57OPvv9jg0FWrZQH7sc'; // <-- เปลี่ยนตรงนี้
+    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
+
+    try {
+      const res = await fetch(url);
+      const text = await res.text();
+
+      // แปลง JSONP เป็น JSON
+      const jsonText = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+      const data = JSON.parse(jsonText);
+
+      const rows = data.table.rows;
+      // สมมติ: A=ชื่อ, B=หมวดหมู่, C=รูป, D=ลิงก์
+      const products = rows
+        .slice(1) // ตัดแถวแรก (header) ทิ้ง
+        .map(row => ({
+            name: row.c[0]?.v || '',
+            category: row.c[1]?.v || '',
+            image: row.c[2]?.v || '',
+            link: row.c[3]?.v || '',
+        }));
+
+      return products;
+    } catch (error) {
+      console.error('Error fetching Google Sheet:', error);
+      productList.innerHTML = '<div style="text-align:center; padding: 50px; color: red;">เกิดข้อผิดพลาดในการโหลดข้อมูลสินค้า</div>';
+      return [];
+    }
+  }
+
+  function renderCategoryButtons(categories) {
+    const allButton = categoryBar.querySelector('[data-filter="all"]');
+    categoryBar.innerHTML = '';
+    categoryBar.appendChild(allButton);
+
+    allButton.addEventListener('click', () => {
+      document.querySelectorAll('.category-bar button').forEach(btn => btn.classList.remove('active'));
+      allButton.classList.add('active');
+      filterAndPaginate(1);
+    });
+
+    categories.forEach(category => {
+      const button = document.createElement('button');
+      button.textContent = category;
+      button.dataset.filter = category;
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.category-bar button').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        filterAndPaginate(1);
+      });
+      categoryBar.appendChild(button);
+    });
+  }
+
+  function renderProducts(products, page = 1) {
+    productList.innerHTML = '';
+    if (products.length === 0) {
+      productList.innerHTML = '<div style="text-align: center; padding: 50px; color: #666;">ยังไม่มีสินค้า</div>';
+      pagination.innerHTML = '';
+      return;
+    }
+
+    currentPage = page;
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const pageItems = products.slice(startIndex, endIndex);
+
+    pageItems.forEach(prod => {
+      const card = document.createElement('div');
+      card.classList.add('product-card');
+      card.dataset.category = prod.category;
+      card.dataset.name = prod.name.toLowerCase();
+
+      card.innerHTML = `
+        <img src="${prod.image}" alt="ภาพสินค้า ${prod.name}" onerror="this.src='https://via.placeholder.com/180x160?text=No+Image'" />
+        <div class="info">
+          <p>${prod.name}</p>
+          <a href="${prod.link}" target="_blank" rel="noopener noreferrer">ดูสินค้า</a>
+        </div>
+      `;
+      productList.appendChild(card);
+    });
+
+    renderPagination(products.length, page);
+  }
+
+  function renderPagination(totalItems, currentPage) {
+    pagination.innerHTML = '';
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+    if (totalPages <= 1) return;
+
+    const prevBtn = document.createElement('button');
+    prevBtn.textContent = 'ก่อนหน้า';
+    prevBtn.disabled = currentPage === 1;
+    prevBtn.addEventListener('click', () => {
+      if (currentPage > 1) {
+        renderProducts(filteredProducts, currentPage - 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+    pagination.appendChild(prevBtn);
+
+    for(let i = 1; i <= totalPages; i++) {
+      const btn = document.createElement('button');
+      btn.textContent = i;
+      btn.classList.toggle('active', i === currentPage);
+      btn.addEventListener('click', () => {
+        if (i !== currentPage) {
+          renderProducts(filteredProducts, i);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+      pagination.appendChild(btn);
+    }
+
+    const nextBtn = document.createElement('button');
+    nextBtn.textContent = 'ถัดไป';
+    nextBtn.disabled = currentPage === totalPages;
+    nextBtn.addEventListener('click', () => {
+      if (currentPage < totalPages) {
+        renderProducts(filteredProducts, currentPage + 1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+    pagination.appendChild(nextBtn);
+  }
+
+  function filterAndPaginate(page = 1) {
+    const keyword = searchInput.value.toLowerCase();
+    const activeCategory = document.querySelector('.category-bar button.active').dataset.filter;
+
+    filteredProducts = allProducts.filter(product => {
+      const matchCategory = activeCategory === 'all' || product.category === activeCategory;
+      const matchKeyword = product.name.toLowerCase().includes(keyword);
+      return matchCategory && matchKeyword;
+    });
+
+    updateItemsPerPage();
+    renderProducts(filteredProducts, page);
+  }
+
+  searchInput.addEventListener('input', () => filterAndPaginate(1));
+
+  window.addEventListener('resize', () => {
+    updateItemsPerPage();
+    const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+    if (currentPage > totalPages) currentPage = totalPages || 1;
+    renderProducts(filteredProducts, currentPage);
+  });
+
+  async function init() {
+    allProducts = await fetchDataFromGoogleSheet();
+    const uniqueCategories = [...new Set(allProducts.map(p => p.category))].sort((a, b) => a.localeCompare(b));
+    renderCategoryButtons(uniqueCategories);
+    filterAndPaginate(1);
+  }
+
+  init();
+</script>
+
+</body>
+</html>
